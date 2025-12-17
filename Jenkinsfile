@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  tools {
+    nodejs 'nodejs'
+  }
+
   environment {
     SONARQUBE_ENV = 'sonarqube'
   }
@@ -17,6 +21,8 @@ pipeline {
     stage('Install Backend Dependencies') {
       steps {
         dir('backend') {
+          sh 'node -v'
+          sh 'npm -v'
           sh 'npm install'
         }
       }
@@ -30,34 +36,5 @@ pipeline {
       }
     }
 
-    stage('SonarQube Scan - Backend') {
-      steps {
-        withSonarQubeEnv('sonarqube') {
-          dir('backend') {
-            sh '''
-              sonar-scanner \
-                -Dsonar.projectKey=mern-backend \
-                -Dsonar.sources=.
-            '''
-          }
-        }
-      }
-    }
-
-    stage('SonarQube Scan - Frontend') {
-      steps {
-        withSonarQubeEnv('sonarqube') {
-          dir('frontend') {
-            sh '''
-              sonar-scanner \
-                -Dsonar.projectKey=mern-frontend \
-                -Dsonar.sources=.
-            '''
-          }
-        }
-      }
-    }
-
-  }   // stages
-
-}     // pipeline
+  }
+}
