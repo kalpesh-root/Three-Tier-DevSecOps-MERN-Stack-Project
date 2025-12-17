@@ -35,9 +35,29 @@ pipeline {
         withSonarQubeEnv('sonarqube') {
           dir('backend') {
             sh '''
-            sonar-scanner \
-              -Dsonar.projectKey=mern-backend \
-              -Dsonar.sources=.
+              sonar-scanner \
+                -Dsonar.projectKey=mern-backend \
+                -Dsonar.sources=.
             '''
           }
         }
+      }
+    }
+
+    stage('SonarQube Scan - Frontend') {
+      steps {
+        withSonarQubeEnv('sonarqube') {
+          dir('frontend') {
+            sh '''
+              sonar-scanner \
+                -Dsonar.projectKey=mern-frontend \
+                -Dsonar.sources=.
+            '''
+          }
+        }
+      }
+    }
+
+  }   // stages
+
+}     // pipeline
