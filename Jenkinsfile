@@ -60,11 +60,12 @@ pipeline {
   stage('Trivy Scan') {
     steps {
       sh '''
-        trivy image mern-backend:latest
+        docker run --rm \
+          -v /var/run/docker.sock:/var/run/docker.sock \
+          aquasec/trivy:latest image mern-backend:latest
       '''
+    }
   }
-}
-
 
   }
 }
