@@ -35,14 +35,17 @@ pipeline {
         }
       }
     }
-  stage('SonarQube Scan') {
-    steps {
-      withSonarQubeEnv('sonarqube') {
-        sh '''
-          sonar-scanner \
-          -Dsonar.projectKey=mern-app \
-          -Dsonar.sources=. \
-        '''
+    stage('SonarQube Scan') {
+      steps {
+        script {
+          def scannerHome = tool 'sonar-scanner'
+          withSonarQubeEnv('sonarqube') {
+          sh """
+            ${scannerHome}/bin/sonar-scanner \
+            -Dsonar.projectKey=mern-app \
+            -Dsonar.sources=.
+          """
+      }
     }
   }
 }
