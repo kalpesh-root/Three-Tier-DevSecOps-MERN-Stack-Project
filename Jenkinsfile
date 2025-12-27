@@ -35,6 +35,19 @@ pipeline {
         }
       }
     }
+  stage('SonarQube Scan') {
+    steps {
+      withSonarQubeEnv('sonarqube') {
+        sh '''
+          sonar-scanner \
+          -Dsonar.projectKey=mern-app \
+          -Dsonar.sources=. \
+          -Dsonar.host.url=$SONAR_HOST_URL \
+          -Dsonar.login=$SONAR_AUTH_TOKEN
+        '''
+    }
+  }
+}
 
   }
 }
