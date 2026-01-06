@@ -82,25 +82,27 @@ pipeline {
       '''
   }
 }
+
   stage('Update GitOps Repo') {
     steps {
-      sh '''
-        rm -rf mern-gitops-argocd
-        git clone https://github.com/kalpesh-root/mern-gitops-argocd.git
-        cd mern-gitops-argocd
+      withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+        sh '''
+          rm -rf mern-gitops-argocd
+          git clone https://${GITHUB_TOKEN}@github.com/kalpesh-root/mern-gitops-argocd.git
+          cd mern-gitops-argocd
 
-        sed -i "s|image: .*mern-backend:.*|image: 475834860148.dkr.ecr.ap-south-1.amazonaws.com/mern-backend:${BUILD_NUMBER}|" backend/deployment.yaml
+          sed -i "s|image: .*mern-backend:.*|image: 475834860148.dkr.ecr.ap-south-1.amazonaws.com/mern-backend:${BUILD_NUMBER}|" backend/deployment.yaml
 
-        git config user.email "jenkins@local"
-        git config user.name "jenkins"
+          git config user.email "jenkins@local"
+          git config user.name "jenkins"
 
-        git add backend/deployment.yaml
-        git commit -m "Update backend image to ${BUILD_NUMBER}"
-        git push origin main
+          git add backend/deployment.yaml
+          git commit -m "Update backend image to ${BUILD_NUMBER}"
+          git push origin main
       '''
+    }
   }
 }
-
 
 
   }
