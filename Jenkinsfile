@@ -106,8 +106,19 @@ pipeline {
     }
   }
 }
+}
 
-
-
-  }
+post {
+  always {
+    cleanWs()
+   }
+   failure {
+     echo "Pipeline failed. Fix issues before retrying."
+   }
+   success {
+     echo "Pipeline completed successfully."
+   }
+ }
+}
+  
 }
