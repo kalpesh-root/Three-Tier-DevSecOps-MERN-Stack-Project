@@ -67,5 +67,22 @@ pipeline {
     }
   }
 
+  stage('Build & Push Backend Image') {
+    steps {
+      sh '''
+        aws ecr get-login-password --region ap-south-1 \
+        | docker login --username AWS --password-stdin 475834860148.dkr.ecr.ap-south-1.amazonaws.com
+
+        docker build -t mern-backend:${BUILD_NUMBER} backend
+
+        docker tag mern-backend:${BUILD_NUMBER} \
+        475834860148.dkr.ecr.ap-south-1.amazonaws.com/mern-backend:${BUILD_NUMBER}
+
+        docker push 475834860148.dkr.ecr.ap-south-1.amazonaws.com/mern-backend:${BUILD_NUMBER}
+      '''
+  }
+}
+
+
   }
 }
