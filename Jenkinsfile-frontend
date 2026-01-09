@@ -1,0 +1,61 @@
+stage('Install Frontend Dependencies') {
+  steps {
+    dir('frontend') {
+      sh 'npm install'
+      sh 'npm run build'
+    }
+  }
+}
+
+stage('Docker Build Frontend') {
+  steps {
+    sh '''
+      docker build -t mern-frontend:${BUILD_NUMBER} frontend/
+    '''
+  }
+}
+
+stage('Trivy Scan Frontend Image') {
+  steps {
+    sh '''
+      docker run --rm \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        aquasec/trivy:latest image mern-frontend:${BUILD_NUMBER}
+    '''
+  }
+}
+
+stage('Build & Push Frontend Image') {
+  steps {
+    sh '''
+      aws ecr get-login-password --region ap-south-1 \
+      | docker login --username AWS --password-stdin 475834860148.dkr.ecr.ap-south-1.amazonaws.com
+
+      docker tag mern-frontend:${BUILD_NUMBER} \
+      475834860148.dkr.ecr.ap-south-1.amazonaws.com/mern-frontend:${BUILD_NUMBER}
+
+      docker push 475834860148.dkr.ecr.ap-south-1.amazonaws.com/mern-frontend:${BUILD_NUMBER}
+    '''
+  }
+}
+
+stage('Update Frontend Image in GitOps Repo') {
+  steps {
+    withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+      sh '''
+        rm -rf mern-gitops-argocd
+        git clone https://github.com/kalpesh-root/mern-gitops-argocd.git
+        cd mern-gitops-argocd
+
+        sed -i "s|image: .*mern-frontend:.*|image: 475834860148.dkr.ecr.ap-south-1.amazonaws.com/mern-frontend:${BUILD_NUMBER}|" frontend/deployment.yaml
+
+        git config user.email "jenkins@local"
+        git config user.name "jenkins"
+
+        git add frontend/deployment.yaml
+        git commit -m "Update frontend image to ${BUILD_NUMBER}"
+        git push https://kalpesh-root:${GITHUB_TOKEN}@github.com/kalpesh-root/mern-gitops-argocd.git main
+      '''
+    }
+  }
+}
