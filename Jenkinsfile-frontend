@@ -110,3 +110,4 @@ pipeline {
     }
     success {
       echo "Frontend pipeline completed
+            }
