@@ -6,9 +6,9 @@ pipeline {
   }
 
   environment {
-    AWS_REGION = 'ap-south-1'
+    AWS_REGION   = 'ap-south-1'
     ECR_REGISTRY = '475834860148.dkr.ecr.ap-south-1.amazonaws.com'
-    IMAGE_NAME = 'mern-frontend'
+    IMAGE_NAME   = 'mern-frontend'
     SONARQUBE_ENV = 'sonarqube'
   }
 
@@ -21,7 +21,7 @@ pipeline {
       }
     }
 
-    stage('Install Frontend Dependencies') {
+    stage('Install & Build Frontend') {
       steps {
         dir('frontend') {
           sh 'node -v'
@@ -101,14 +101,15 @@ pipeline {
     }
   }
 
-post {
-  always {
-    cleanWs()
-  }
-  failure {
-    echo "Frontend pipeline failed."
-  }
-  success {
-    echo "Frontend pipeline completed."
+  post {
+    always {
+      cleanWs()
+    }
+    failure {
+      echo "Frontend pipeline failed."
+    }
+    success {
+      echo "Frontend pipeline completed."
+    }
   }
 }
