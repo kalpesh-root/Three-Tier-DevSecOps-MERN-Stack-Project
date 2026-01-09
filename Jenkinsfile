@@ -27,14 +27,7 @@ pipeline {
         }
       }
     }
-
-    stage('Install Frontend Dependencies') {
-      steps {
-        dir('frontend') {
-          sh 'npm install'
-        }
-      }
-    }
+    
     stage('SonarQube Scan') {
       steps {
         script {
