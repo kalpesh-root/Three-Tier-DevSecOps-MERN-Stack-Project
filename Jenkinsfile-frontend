@@ -21,16 +21,20 @@ pipeline {
       }
     }
 
-    stage('Install & Build Frontend') {
-      steps {
-        dir('frontend') {
-          sh 'node -v'
-          sh 'npm -v'
-          sh 'npm install'
-          sh 'npm run build'
-        }
+  stage('Install & Build Frontend') {
+    steps {
+      dir('frontend') {
+        sh '''
+          node -v
+          npm -v
+          export NODE_OPTIONS=--openssl-legacy-provider
+          npm install
+          npm run build
+        '''
       }
     }
+  }
+
 
     stage('SonarQube Scan') {
       steps {
