@@ -101,13 +101,14 @@ pipeline {
     }
   }
 
-  post {
-    always {
-      cleanWs()
-    }
-    failure {
-      echo "Frontend pipeline failed."
-    }
-    success {
-      echo "Frontend pipeline completed
-            }
+post {
+  always {
+    cleanWs()
+  }
+  failure {
+    echo "Frontend pipeline failed."
+  }
+  success {
+    echo "Frontend pipeline completed."
+  }
+}
